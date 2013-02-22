@@ -1,0 +1,12 @@
+Package: MeccaDiscrete
+Type: Package
+Title: MECCA Discrete
+Version: 6.1
+Date: 2013-01-29
+Author: Luke Harmon
+Maintainer: Daniel Caetano <caetanods1@gmail.com>
+Depends: TreeSim, pls, laser
+Description: Everything working ok. Doing some minor modifications in R functions.
+License: What license is it under?
+LazyLoad: yes
+Packaged: 2013-02-02 00:55:25 UTC; daniel

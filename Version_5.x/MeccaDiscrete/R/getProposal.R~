@@ -1,0 +1,11 @@
+getProposal <-
+function(currentState, psi, min = 0, max = NA) {
+  if (max == NA) {
+    max <- currentState + (10 * psi) # This will define a max number that will always be higher than the result of the proposal and small enough to not overflow.
+  }
+  
+  out <- .Call("getProposal", currentState = as.double(currentState), psi = as.double(psi), min = as.double(min), max = as.double(max), package = "MeccaDiscrete")
+  
+  return(out)
+  
+}

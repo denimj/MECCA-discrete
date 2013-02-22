@@ -1,0 +1,11 @@
+Package: MeccaDiscrete
+Type: Package
+Title: MECCA Discrete
+Version: 5.1
+Date: 2012-11-02
+Author: Luke Harmon
+Maintainer: Daniel Caetano <caetanods1@gmail.com>
+Depends: TreeSim, pls, laser, Rcpp
+Description: Changed the 'simBranchingDiscrete.R' function to work with the 'noTreeSim.R' and not with the C code. Copied a 'backup_simBranchingDiscrete.R' file in the 'cd ..' folder. The C code is out of the package. Seem to be everything ok. But the first test showed a empty result of 'runDiscreteMECCA.R'. -- Added one line on the NAMESPACE file. Adding C codes to make the calculations faster: getProposal.R | 
+License: What license is it under?
+LazyLoad: yes

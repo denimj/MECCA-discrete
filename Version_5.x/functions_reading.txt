@@ -1,0 +1,15 @@
+There is a series of functions that are taking too much time to run. Here I will try to make them, and, as a result, the whole process run faster. 
+Below is a list of the function that have already been viewed. Folliwing will be any kind of commentaries and descriptions of modifications.
+
+acceptance.R
+Could be acc if there is a way to generate normal densities in C (dnorm). There is a for() loop in the function.
+
+addMissingTaxa.R
+There is a block, begining in line 31 [tipDiversity<-sort(tipDiversity)] and ending in line 
+
+calibrateDiscreteABC (the internal function are identified by one *)
+This is one of the functions that do need to be faster.
+
+getProposal*
+The function have a random generation number which is simple enough to be transformed into a C code. It use runif() for this. The function runs twice each generation and is inside a while() loop that can make it run more than two cicles each generation!! This need to be efficient.
+

@@ -1,0 +1,136 @@
+calibrateDiscreteABC <-
+function(phy, tipStates, nsteps=1000, qPrior=c(0.0001, 10), r=1, eps=0, propWidth = 0.1, seed, fixRoot=NA, sym=FALSE) 
+{
+	qmin <- log(qPrior[1])
+	qmax <- log(qPrior[2])
+	tipD <- rowSums(tipStates)
+
+	nclades <- length(tipD)
+
+	mm <- match(phy$tip.label, rownames(tipStates))
+	calResBD <- matrix(nrow= nsteps, ncol=3)
+	
+	if(sym) {
+		calResChar <- matrix(nrow= nsteps, ncol=1+nclades)
+	} else {
+		calResChar <- matrix(nrow= nsteps, ncol=2+nclades)
+	}
+
+	# USE initpars, but probably while loop can die
+
+	#if (length(initPars) > 1) {
+	#	thetaB <- initPars[1];
+	#	thetaD <- initPars[2];
+	#	} else if (initPars == "ML") {
+	#		while(1) {  ## generate starting states
+				mleBD <- getDivMLE(phy, tipD)
+				thetaB <- mleBD$lamda
+				thetaD <- mleBD$mu
+	#				if (thetaB > thetaD) (break)
+	#			}
+	#	} 
+			
+	Lk <- logLP(phy, thetaB, thetaD) + logLT(phy, tipD, thetaB, thetaD) ## This was calling the wrong object before: logLT(phy, richness, thetaB, thetaD)
+	
+	pb <- txtProgressBar(min=0, max=nsteps, char="-", style=3)
+
+	for(i in 1:nsteps) {
+		## we can now compute the taxonomic/phylogenetic likelihood of the tree data under the b/d priors
+		while(1){
+			thetaBprop = getProposal(thetaB,propWidth, 0, Inf) # prior for lambda
+			thetaDprop = getProposal(thetaD, propWidth, 0, Inf) # prior for mu
+
+			if(thetaBprop > thetaDprop) (break)
+		
+		}
+		
+		propLk <- logLP(phy, thetaBprop, thetaDprop) + logLT(phy, tipD, thetaBprop, thetaDprop) ## This was calling the wrong object before: logLT(phy, richness, thetaB, thetaD)
+		
+		if(propLk == - Inf) {
+			LKratio <- 0
+			
+			} else {
+			
+			LKratio <- exp(propLk - Lk)
+			}
+		
+			if(LKratio >= 1) {
+			
+			thetaB <- thetaBprop
+			thetaD <- thetaDprop
+			Lk <- propLk
+			
+			}
+		
+		if (LKratio < 1) {
+			
+			p <- runif(1)
+			if (p <= LKratio) {
+			thetaB <- thetaBprop
+			thetaD <- thetaDprop
+			Lk <- propLk
+							
+				} else {
+					
+			thetaB <- thetaB
+			thetaD <- thetaD
+			Lk <- Lk
+				
+				}
+			
+			}
+
+		calResBD[i,] <- c(thetaB, thetaD, Lk)
+		
+		##
+				
+		if(sym) {
+			q12 <- runif(1, min= qmin, max= qmax)
+			q21 <- q12
+			p1root <- 0.5
+
+		} else {
+			q12 <- runif(1, min= qmin, max= qmax)
+			q21 <- runif(1, min=qmin, max= qmax)
+			p1root <- q21/(q12+q21)
+		}
+		
+		if(!is.na(fixRoot)) {
+			rootState=fixRoot
+		} else {
+			if(runif(1)<p1root) rootState=1 else rootState=2
+		}
+		
+		# simulate dataset
+		ss <- simDiscreteIncompleteTree(phy, tipD, exp(q12), exp(q21), rootState, r, eps, seed)
+		simData <- ss$res
+		seed <- ss$seed
+		
+		mm2 <- match(rownames(tipStates), rownames(simData))
+		# try using proportion as summary stat
+		x <- simData[mm2,1]/tipD
+		y <- tipStates[,1]/tipD
+	
+		dd <- dist(rbind(x, y))
+		
+		if(sym) {
+			calResChar[i,] <- c(exp(q12), x)
+		} else {
+			calResChar[i,] <- c(exp(q12), exp(q21), x)
+		}
+	    setTxtProgressBar(pb, i)
+
+		}
+	
+	cat("\n")		
+		
+	colnames(calResBD) <- c("b", "d", "lnL")
+	
+	if(sym) {
+		colnames(calResChar) <- c("q", names(tipD))	
+	} else {
+		colnames(calResChar) <- c("q12", "q21", names(tipD))	
+	}
+	
+	return(list(calResBD = calResBD, calResChar = calResChar))
+}

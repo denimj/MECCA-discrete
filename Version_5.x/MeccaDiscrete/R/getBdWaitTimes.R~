@@ -1,0 +1,33 @@
+getBdWaitTimes <-
+function (n, age, lambda, mu, rho=1) 
+{
+    #edge <- c(-1, -2)
+    #leaves <- c(-2)
+    #timecreation <- c(0, 0)
+    #time <- 0
+    #maxspecies <- -2
+    #edge.length <- c(0)
+    #index = 2
+    specevents <- vector()
+    specevents <- c(specevents, age)
+    for (j in 1:(n - 1)) {
+        r <- runif(1, 0, 1)
+        tor = age
+        lamb1 = rho * lambda
+        mu1 = mu - lambda * (1 - rho)
+        if (lambda > mu) {
+            temp <- 1/(lamb1 - mu1) * log((lamb1 - mu1 * exp((-lamb1 + 
+                mu1) * tor) - mu1 * (1 - exp((-lamb1 + mu1) * 
+                tor)) * r)/(lamb1 - mu1 * exp((-lamb1 + mu1) * 
+                tor) - lamb1 * (1 - exp((-lamb1 + mu1) * tor)) * 
+                r))
+        }
+        else {
+            temp <- -((tor * r)/(-1 - lambda * rho * tor + lambda * 
+                rho * tor * r))
+        }
+        specevents <- c(specevents, temp)
+    }
+    specevents <- sort(specevents, decreasing = TRUE)
+	specevents    
+}

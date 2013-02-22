@@ -1,0 +1,2 @@
+useDynLib(MeccaDiscrete)
+export("getProposal")

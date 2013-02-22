@@ -1,0 +1,14 @@
+simBranchingDiscrete <-
+function(n, age, lambda, mu, q12, q21, startState=1, seed=1) {
+		
+	qMatrix <- rbind(c(-q12, q12), c(q21, -q21))
+	
+	wt <- getBdWaitTimes(n=n, age=age, lambda=lambda, mu=mu)
+	
+	ss <- noTreeSim(wt, qMatrix, startState, seed)
+	
+	# The below line were modified from the original one to make sure that the res object can be created.
+	res <- list(ns1=ss[1], ns2=ss[2], seed=ss[3])
+	
+	res
+	}

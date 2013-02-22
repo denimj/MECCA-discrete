@@ -1,0 +1,22 @@
+* installing *source* package ‘MeccaDiscrete’ ...
+** libs
+gcc -std=gnu99 -I/usr/share/R/include -DNDEBUG      -fpic  -O3 -pipe  -g  -c noTreeSimv6.c -o noTreeSimv6.o
+noTreeSimv6.c: In function ‘noTreeSim’:
+noTreeSimv6.c:206:15: warning: comparison between pointer and integer [enabled by default]
+noTreeSimv6.c:220:3: warning: passing argument 3 of ‘bnldev’ from incompatible pointer type [enabled by default]
+noTreeSimv6.c:115:7: note: expected ‘long int *’ but argument is of type ‘long int **’
+noTreeSimv6.c:221:3: warning: passing argument 3 of ‘bnldev’ from incompatible pointer type [enabled by default]
+noTreeSimv6.c:115:7: note: expected ‘long int *’ but argument is of type ‘long int **’
+noTreeSimv6.c:227:3: warning: passing argument 1 of ‘ran_ecu’ from incompatible pointer type [enabled by default]
+noTreeSimv6.c:68:8: note: expected ‘long int *’ but argument is of type ‘long int **’
+gcc -std=gnu99 -shared -o MeccaDiscrete.so noTreeSimv6.o -L/usr/lib/R/lib -lR
+installing to /home/daniel/Documents/Academicos/Harmon_Lab/Projects/MECCA_Qualitative/Version_6.x/MeccaDiscrete.Rcheck/MeccaDiscrete/libs
+** R
+** preparing package for lazy loading
+** help
+No man pages found in package  ‘MeccaDiscrete’ 
+*** installing help indices
+** building package indices
+** testing if installed package can be loaded
+
+* DONE (MeccaDiscrete)

@@ -1,0 +1,48 @@
+simDiscreteIncompleteTree <-
+function(phy, tipD, q12, q21, rootState, r, eps, seed=1) {
+	print("Begin")
+	mm<-match(phy$tip.label, names(tipD))
+
+	pp <- pruneBL(phy, tipD)
+	prunedPhy <- pp[[2]]
+	tipLen <- pp[[1]]
+	
+	qMatrix <- rbind(c(-q12, q12), c(q21, -q21))
+	print("Bef sim.char")
+	ss <- sim.char(prunedPhy, model.matrix=list(qMatrix), model="discrete", root.state= rootState)[,1,1]
+
+	res <- matrix(nrow=length(ss), ncol=2)
+	rownames(res) <- names(ss)
+	print("Begin loop")
+
+	for(i in 1:length(ss)) {
+		print(c("line19",i))
+		tl <- tipLen[names(ss)[i]]
+		print(c("line21",i))
+		ntaxa <- tipD[names(ss)[i]]
+		print(c("line23",i))
+		if(ntaxa==1) {
+			## Identify the resolved terminals (only one taxa).
+			print(c("line25",i))
+			res[i,] <- 0
+			print(c("line27",i))
+			res[i,ss[i]] <- 1
+			print(c("line29",i))
+		} else {
+			## Identify the unresolved terminals.
+			print(c("line31",i))
+			bd <- getBD(r, eps)
+			print(c("line33",i))
+			sb <- simBranchingDiscrete(n=ntaxa, age=tl, lambda=bd$b, mu=bd$d, q12=q12, q21=q21, startState=ss[i]) ## I took of the 'seed' argument that was here. But see 'simBranchingDiscrete.R'.
+			print(c("line35",i))
+			res[i,] <- c(sb$ns1, sb$ns2)
+			print(c("line37",i))
+			seed <- sb$seed
+			print(c("line39",i))
+		}
+		print(c("line41",i))
+		}
+	print("End loop")
+	
+	return(list(res=res, seed=seed))
+}
