@@ -1,4 +1,4 @@
 discrete
 ========
 
-Plant flower project.
+Plant flower test of a modification.
