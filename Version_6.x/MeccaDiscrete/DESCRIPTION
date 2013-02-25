@@ -1,12 +1,12 @@
 Package: MeccaDiscrete
 Type: Package
 Title: MECCA Discrete
-Version: 6.2
+Version: 6.4
 Date: 2013-01-29
 Author: Luke Harmon
 Maintainer: Daniel Caetano <caetanods1@gmail.com>
 Depends: TreeSim, pls, laser
-Description: Everything working ok. Doing some minor modifications in R functions. Changed the function 'collapseTreeForMECCA' to work with 'tips' instead of node.leaves.
+Description: Everything working ok. Doing some minor modifications in R functions. Changed the function 'collapseTreeForMECCA' to work with 'tips' instead of node.leaves. Make some minor test changes in the C code (l 34, 198 and 237), in the noTreeSimFast (l 6 and 9), in the simBranchingDiscrete (l 11), in the simDiscreteIncompleteTree (l 14, 34, 40) functions. Now the function is working well. The modifications described herein are still there but the thing is running ok. The problem is the number of decimal places in the 'times' object of the C code.
 License: What license is it under?
 LazyLoad: yes
 Packaged: 2012-11-29 22:34:05 UTC; daniel

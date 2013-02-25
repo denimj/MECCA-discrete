@@ -14,7 +14,7 @@ function (n, age, lambda, mu, rho=1)
   
   ## The two lines below seem not to make sense. Then I did:
     #specevents <- vector() ##Since the vector is empty, the value of 'age' will be equall to 'specevents' directly.
-    #specevents <- c(specevents, age)
+    #specevents <- c(specevents, age) ## This is used to append a value to an existing vector. However, since specevents is empty, it does not matter.
   specevents <- age
 
   # The calculations below were based on the work from Stadler T. You would expect the need to simulate all the trees and then sample. However, this matematical procedure avoids the need to do this and make the process faster. 

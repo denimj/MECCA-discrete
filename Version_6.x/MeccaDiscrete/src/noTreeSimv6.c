@@ -5,11 +5,12 @@
 // January 29 2013
 // *************************
 
+#include <R.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
 #include <sys/time.h>
-#define PI 3.141592654
+//#define PI 3.141592654 //This does not need to be defined here, for I included the R.h library.
 
 // definitions for ran_ecu()
 
@@ -31,12 +32,13 @@ void pMk2(double *pij, double q12, double q21, double t);
 double ran_ecu(long *seed);
 float bnldev(float pp, int n, long *seed);
 float gammln(float xx);
-void noTreeSim(double *times, double *q12, double *q21, int *startState, long *seed, int *nState1, int *nState2);
+void noTreeSim(int *ntimes, double *times, double *q12, double *q21, int *startState, long *seed, int *nState1, int *nState2, int *vezes, int *loops);
 
 // end function prototypes
 
 // functions
 
+/*The function 'pMk2' is calculating values for 'pij' based on the values for q12 and q21 */
 void pMk2(double *pij, double q12, double q21, double t) {
 	double x;
 	
@@ -54,8 +56,6 @@ void pMk2(double *pij, double q12, double q21, double t) {
         pij[3]= ((1 - x)*q12) / (q12 + q21);
         pij[4]= (x*q21 + q12) / (q12 + q21);
     }
-
-
 }
 
 /**************************************************************************************************/
@@ -195,15 +195,19 @@ float gammln(float xx) {
 
 // main program
 
-void noTreeSim(double *times, double *q12, double *q21, int *startState, long *seed, int *nState1, int *nState2){
-        int ch12, ch21, i, ns1, ns2, ntimes;
+//void noTreeSim(double *times, double *q12, double *q21, int *startState, long *seed, int *nState1, int *nState2){
+void noTreeSim(int *ntimes, double *times, double *q12, double *q21, int *startState, long *seed, int *nState1, int *nState2, int *vezes, int *loops){
+  int ch12, ch21, i, ns1, ns2, start,loop;
 	double wt, pij[4], prT1, rr;
+        
+        loop = 0;
+        start = *startState;
 
-        ntimes = sizeof(times) / sizeof(double);
+        //ntimes = sizeof(times) / sizeof(double); // This could be wrong. Better to do this in R.
 	
 	srand(*seed);
 	
-	if(startState==1) {
+	if(start==1) {
 		ns1=1;
 		ns2=0;
 	}
@@ -212,19 +216,20 @@ void noTreeSim(double *times, double *q12, double *q21, int *startState, long *s
 		ns2=1;
 	}
 	
-	for(i=1; i< ntimes; i++) {
+	for(i=1; i< *ntimes; i++) { // Need to verify if this loop will break when i = ntimes or when i = (ntimes-1). And also if this make some difference for the function.
+                loop++;
 		wt=times[i-1]-times[i];
 		// get probs	
 		pMk2(pij, *q12, *q21, wt); //Made args 2 and 3 pointers in pMk2 function.
 		// how many change?	
-		ch12=bnldev(pij[3], ns1, &seed);
-		ch21=bnldev(pij[2], ns2, &seed);
+		ch12=bnldev(pij[3], ns1, seed);
+		ch21=bnldev(pij[2], ns2, seed);
 		// add these to the totals
 		ns1=ns1-ch12+ch21;
 		ns2=ns2-ch21+ch12;
 		// which type is affected by the speciation event?
 		prT1=(double)ns1/((double)ns1+(double)ns2);
-		rr=ran_ecu(&seed);
+		rr=ran_ecu(seed);
 		
 		if(rr<prT1) {
 			ns1++;
@@ -234,4 +239,6 @@ void noTreeSim(double *times, double *q12, double *q21, int *startState, long *s
 	}
 	nState1[0]=ns1;
 	nState2[0]=ns2;
+	vezes[0]=*ntimes;
+	loops[0]=loop;
 }	

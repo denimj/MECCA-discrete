@@ -11,11 +11,11 @@ function(phy, richness, startState = startState, Ngens = 10000, printFreq = 100,
 
         wn <- getOption("warn")
         options(warn=-1)
-        nc <- name.check(phy, richness)
-        na <- !sum(is.na(richness) == 0)
+        nc <- geiger:::.treedata(phy, richness) ## Before this was using name.check() but this function is not available anymore.
+        na <- sum(is.na(richness))
         if(!nc == "OK") { stop("names in tree and data do not match") }
         else {
-           if(na == 0) { stop("richness contains missing values") }
+           if(!na == 0) { stop("richness contains missing values") }
         }
         options(warn=wn)
   
