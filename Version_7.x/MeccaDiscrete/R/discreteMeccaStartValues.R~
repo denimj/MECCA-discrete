@@ -31,8 +31,7 @@ function(calibrationOutput, phy, tipStates, tolerance = 0.01, plsComponents) {
 	stats <- bmcal[ , -(1:2)]
 	
 	for(i in 1:Nsims) {
-		plsSim[i, ] <- extractpls(stats[i,], plsComponents, Ncomp)
-                ## this needs adjusting for different numbers of pls components
+		plsSim[i, ] <- extractpls(stats[i,], plsComponents, Ncomp) ## this needs adjusting for different numbers of pls components
 		} ## now this holds the pls adjusted distances
 	
 	dmat <- numeric(Nsims)

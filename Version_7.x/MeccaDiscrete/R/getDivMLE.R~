@@ -37,7 +37,6 @@ names(lik) <- ext
 names(div) <- ext
 names(lam) <- ext
 
-## The return will select for the MLE values that maximizes the likelihood of the parameters estimation.
 return(list("lik" = max(lik), "div" = div[which(lik==max(lik))],"lamda" = lam[which(lik==max(lik))], "mu" = ext[which(lik==max(lik))] * lam[which(lik==max(lik))]
 ))	
 }

@@ -4,8 +4,10 @@ function(phy, tipStates, nsteps=1000, qPrior=c(0.0001, 10), r=1, eps=0, propWidt
 	qmin <- log(qPrior[1])
 	qmax <- log(qPrior[2])
 	tipD <- rowSums(tipStates)
-
+	
 	nclades <- length(tipD)
+	
+	y <- tipStates[,1]/tipD ## The proportion from the real data. Look the x object in line 100.
 
 	mm <- match(phy$tip.label, rownames(tipStates))
 	calResBD <- matrix(nrow= nsteps, ncol=3)
@@ -30,76 +32,63 @@ function(phy, tipStates, nsteps=1000, qPrior=c(0.0001, 10), r=1, eps=0, propWidt
 	#			}
 	#	} 
 			
-	Lk <- logLP(phy, thetaB, thetaD) + logLT(phy, tipD, thetaB, thetaD) ## This was calling the wrong object before: logLT(phy, richness, thetaB, thetaD)
+	Lk <- logLP(phy, thetaB, thetaD) + logLT(phy, tipD, thetaB, thetaD)
+	## This is the diversification rate likelihood using the values of thetaB (lambda) and thetaD (mu) that maximizes the MLE likelihood under the vector of extinction factors from 0.00 to 0.99.
 	
 	pb <- txtProgressBar(min=0, max=nsteps, char="-", style=3)
 
 	for(i in 1:nsteps) {
 		## we can now compute the taxonomic/phylogenetic likelihood of the tree data under the b/d priors
 		while(1){
-			thetaBprop = getProposal(thetaB,propWidth, 0, Inf) # prior for lambda
-			thetaDprop = getProposal(thetaD, propWidth, 0, Inf) # prior for mu
+			thetaBprop <- getProposal(thetaB, propWidth, 0, Inf) # prior for lambda -> The prior is the result of the MLE using the Rabosky method, after some random "jitter"-ish of the value.
+			thetaDprop <- getProposal(thetaD, propWidth, 0, Inf) # prior for mu
 
 			if(thetaBprop > thetaDprop) (break)
-		
+			## Make sure that the proposed value for birth larger than the value for death.		
 		}
 		
-		propLk <- logLP(phy, thetaBprop, thetaDprop) + logLT(phy, tipD, thetaBprop, thetaDprop) ## This was calling the wrong object before: logLT(phy, richness, thetaB, thetaD)
+		propLk <- logLP(phy, thetaBprop, thetaDprop) + logLT(phy, tipD, thetaBprop, thetaDprop) ## The likelihood of the backbone tree and the clade tip with the "jittered" proposal.
 		
 		if(propLk == - Inf) {
 			LKratio <- 0
-			
 			} else {
-			
 			LKratio <- exp(propLk - Lk)
 			}
 		
-			if(LKratio >= 1) {
-			
+		if(LKratio >= 1) {
 			thetaB <- thetaBprop
 			thetaD <- thetaDprop
 			Lk <- propLk
-			
 			}
 		
 		if (LKratio < 1) {
-			
 			p <- runif(1)
 			if (p <= LKratio) {
-			thetaB <- thetaBprop
-			thetaD <- thetaDprop
-			Lk <- propLk
-							
+				thetaB <- thetaBprop
+				thetaD <- thetaDprop
+				Lk <- propLk
 				} else {
-					
-			thetaB <- thetaB
-			thetaD <- thetaD
-			Lk <- Lk
-				
-				}
-			
+				thetaB <- thetaB
+				thetaD <- thetaD
+				Lk <- Lk}
 			}
+	## The "if (p <= LKratio)" will certify that the value of LKratio is positive. However, randomly the value of LKratio can be between 0 and 1 and be smaller than p. In this case, the proposal parameters are discarded. This is done in order to the Lkratio choise not to be too gready. We want the likelihood landscape to be more explored.
 
 		calResBD[i,] <- c(thetaB, thetaD, Lk)
 		
-		##
-				
 		if(sym) {
 			q12 <- runif(1, min= qmin, max= qmax)
 			q21 <- q12
 			p1root <- 0.5
-
-		} else {
+			} else {
 			q12 <- runif(1, min= qmin, max= qmax)
-			q21 <- runif(1, min=qmin, max= qmax)
-			p1root <- q21/(q12+q21)
-		}
+			q21 <- runif(1, min= qmin, max= qmax)
+			p1root <- q21/(q12+q21)}
 		
 		if(!is.na(fixRoot)) {
-			rootState=fixRoot
-		} else {
-			if(runif(1)<p1root) rootState=1 else rootState=2
-		}
+			rootState <- fixRoot
+			} else {
+			if(runif(1) < p1root) rootState <- 1 else rootState <- 2}
 		
 		# simulate dataset
 		ss <- simDiscreteIncompleteTree(phy, tipD, exp(q12), exp(q21), rootState, r, eps, seed)
@@ -108,28 +97,28 @@ function(phy, tipStates, nsteps=1000, qPrior=c(0.0001, 10), r=1, eps=0, propWidt
 		
 		mm2 <- match(rownames(tipStates), rownames(simData))
 		# try using proportion as summary stat
-		x <- simData[mm2,1]/tipD
-		y <- tipStates[,1]/tipD
-	
-		dd <- dist(rbind(x, y))
+		x <- simData[mm2,1]/tipD ## The proportion of tips that have the state 1 from the simulated data (proposal).
+			
+		#dd <- dist(rbind(x, y))
+		## Euclidean distance between the proposal simulated proportion of state 1 and the real data proportion. But it does not go anywhere! Why!?
 		
 		if(sym) {
 			calResChar[i,] <- c(exp(q12), x)
-		} else {
-			calResChar[i,] <- c(exp(q12), exp(q21), x)
-		}
+			} else {
+			calResChar[i,] <- c(exp(q12), exp(q21), x)}
+			## calResChar is a big matrix. The vector of proportions x is the column 3:dim(calResChar)[2] .
+			
 	    setTxtProgressBar(pb, i)
+		} ## End of nsteps loop.
 
-		}
-		
+        cat("\n")
 		
 	colnames(calResBD) <- c("b", "d", "lnL")
 	
 	if(sym) {
 		colnames(calResChar) <- c("q", names(tipD))	
-	} else {
-		colnames(calResChar) <- c("q12", "q21", names(tipD))	
-	}
+		} else {
+		colnames(calResChar) <- c("q12", "q21", names(tipD))}
 	
 	return(list(calResBD = calResBD, calResChar = calResChar))
 }

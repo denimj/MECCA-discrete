@@ -5,7 +5,7 @@ function(currentState, psi, min, max) {
 # Arguments;
 	
 	# current state <- the current state of the parameter;
-	# psi <- a tuning parameter - here, some proportion of the standard deviation from the calibration step; -> Now the function is using 0.1 as a fixed value and not some proportion of the extinction fraction distribution. Talk with Harmon
+	# psi <- a tuning parameter - here, some proportion of the standard deviation from the calibration step;
 	# min <- the lower bound for the prior distribution;
 	# max <- the upper bound for the prior distribution;
 	

@@ -1,0 +1,2 @@
+useDynLib(MeccaDiscrete)
+exportPattern("^[[:alpha:]]+")
