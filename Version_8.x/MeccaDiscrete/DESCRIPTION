@@ -1,12 +1,12 @@
 Package: MeccaDiscrete
 Type: Package
 Title: MECCA Discrete
-Version: 8.0
+Version: 8.1
 Date: 2013-05-13
 Author: Luke Harmon
 Maintainer: Daniel Caetano <caetanods1@gmail.com>
 Depends: TreeSim, pls, laser
-Description: Modifications in the runMecca function.
+Description: Modifications in the runMeccaDiscrete function, added the scale.dcrit to tune the value of the critic distance used to accept or reject the values of Qij. Added the values of the ratio of q12 and q21 in the output of the posterior.
 License: What license is it under?
 LazyLoad: yes
 Packaged: 2012-11-29 22:34:05 UTC; daniel

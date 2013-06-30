@@ -44,7 +44,7 @@ function(phy, richness, startState, Ngens = 10000, printFreq = 100, qPrior=c(0.0
 	
 	## will hold the untransformed summary data
 	charSim <- file(paste(outputName, "charSimFile.txt", sep = "_"), "w")
-	cat("q12", "q21", names(obs), file = charSim, sep = "\t")
+	cat("q12", "q21", "ratio_q12/q21" ,names(obs), file = charSim, sep = "\t")
 	cat("\n", file= charSim)
 	
 	bdSim <- file(paste(outputName, "bdSimFile.txt", sep = "_"), "w")
@@ -152,7 +152,7 @@ function(phy, richness, startState, Ngens = 10000, printFreq = 100, qPrior=c(0.0
  	 			plsSim <- extractpls(sims, pls, ncomp)
 				cat(thetaQ12, thetaQ21, plsSim, file = distSim, sep = "\t")
 				cat("\n", file = distSim)
-				cat(thetaQ12, thetaQ21, sims, file = charSim, sep = "\t")
+				cat(thetaQ12, thetaQ21, thetaQ12/thetaQ21, sims, file = charSim, sep = "\t")
 				cat("\n", file= charSim)
 			}
           

@@ -6,7 +6,7 @@ Date: 2013-05-13
 Author: Luke Harmon
 Maintainer: Daniel Caetano <caetanods1@gmail.com>
 Depends: TreeSim, pls, laser
-Description: Raising the number of components of the summary statistics. May cause macro changes in the stability of the package.
+Description: Modifications in the runMecca function.
 License: What license is it under?
 LazyLoad: yes
 Packaged: 2012-11-29 22:34:05 UTC; daniel
